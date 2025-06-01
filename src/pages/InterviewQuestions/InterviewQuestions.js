@@ -3,6 +3,7 @@ import { jsquestions } from './javascript';
 import { react } from './react';
 import { nodequestions } from './node';
 import { expressquestions } from './express';
+import { sqlquestions } from './sql';
 import { devopsquestions } from './devops';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -66,9 +67,25 @@ const questionData = [
     question: item.title,
     answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
   })),
+  // SQL Theory questions
+  ...sqlquestions.theory.map((item, index) => ({
+    id: item.id,
+    category: 'sql',
+    type: 'theory',
+    question: item.title,
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`sql\n${item.code}\n\`\`\`` : ''}`, // Fixed language to 'sql'
+  })),
+  // SQL Query questions (mapped to "coding" tab)
+  ...sqlquestions.query.map((item, index) => ({
+    id: item.id,
+    category: 'sql',
+    type: 'coding',
+    question: item.title,
+    answer: `${item.content}${item.code ? `\n\n**Solution:**\n\`\`\`sql\n${item.code}\n\`\`\`` : ''}`,
+  })),
 ];
 
-// Extract unique categories ("JavaScript", "React", "Node.js", "express.js", "devOps")
+// Extract unique categories ("JavaScript", "React", "Node.js", "express.js", "devOps", "sql")
 const categories = [...new Set(questionData.map(q => q.category))];
 
 const InterviewQuestions = () => {
@@ -93,8 +110,8 @@ const InterviewQuestions = () => {
   // Find the currently selected question's details
   const currentQuestion = filteredQuestions.find(q => q.id === selectedQuestion);
 
-  // Determine if the "Coding" tab should be shown (only for JavaScript)
-  const showCodingTab = selectedCategory === 'JavaScript';
+  // Determine if the "Coding" tab should be shown (for JavaScript and SQL)
+  const showCodingTab = selectedCategory === 'JavaScript' || selectedCategory === 'sql';
 
   return (
     <div className="min-h-screen bg-black text-white py-12 px-6 md:px-12">
@@ -196,11 +213,11 @@ const InterviewQuestions = () => {
             </nav>
 
             {/* Answer Display */}
-            <div className="w-full md:w-3/4 bg-[#111] rounded-xl p-6 shadow-lg">
+            <div className="w-full md:w-2/4 bg-[#111] rounded-xl p-6 shadow-lg">
               {currentQuestion ? (
                 <div>
                   <h2 className="text-2xl font-bold text-cyan-400 mb-4">{currentQuestion.question}</h2>
-                  <div className="text-gray-300"> {/* Apply className to the wrapper div */}
+                  <div className="text-gray-300">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
