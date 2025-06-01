@@ -1,10 +1,11 @@
 /* trycode/client/src/pages/InterviewQuestions.js */
 import React, { useState } from 'react';
 import {jsquestions} from './javascript';
+import {react} from './react';
 
 // Prepare the question data by mapping the JSON structure to the component's expected format
 const questionData = [
-  // Theory questions
+  // JavaScript Theory questions
   ...jsquestions.theory.map((item, index) => ({
     id: item.id,
     category: 'JavaScript',
@@ -12,7 +13,7 @@ const questionData = [
     question: item.title,
     answer: `${item.content}\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\``,
   })),
-  // Practice questions (combine basic and intermediate into a single "coding" category)
+  // JavaScript Practice questions (combine basic and intermediate into a single "coding" category)
   ...jsquestions.practice.basic.map((item, index) => ({
     id: item.id,
     category: 'JavaScript',
@@ -27,9 +28,17 @@ const questionData = [
     question: item.title,
     answer: `${item.content}\n\n**Solution:**\n\`\`\`javascript\n${item.code}\n\`\`\``,
   })),
+  // React Theory questions
+  ...react.theory.map((item, index) => ({
+    id: item.id,
+    category: 'React',
+    type: 'theory',
+    question: item.title,
+    answer: `${item.content}\n\n**Code Example:**\n\`\`\`jsx\n${item.code}\n\`\`\``,
+  })),
 ];
 
-// Extract unique categories (in this case, just "JavaScript")
+// Extract unique categories ("JavaScript" and "React")
 const categories = [...new Set(questionData.map(q => q.category))];
 
 const InterviewQuestions = () => {
@@ -53,6 +62,9 @@ const InterviewQuestions = () => {
 
   // Find the currently selected question's details
   const currentQuestion = filteredQuestions.find(q => q.id === selectedQuestion);
+
+  // Determine if the "Coding" tab should be shown (only for JavaScript)
+  const showCodingTab = selectedCategory === 'JavaScript';
 
   return (
     <div className="min-h-screen bg-black text-white py-12 px-6 md:px-12">
@@ -94,16 +106,18 @@ const InterviewQuestions = () => {
                 >
                   Theory
                 </button>
-                <button
-                  onClick={() => setActiveTab('coding')}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-                    activeTab === 'coding'
-                      ? 'bg-cyan-600 text-white shadow-lg'
-                      : 'bg-gray-800 text-gray-400 hover:bg-cyan-500 hover:text-white'
-                  }`}
-                >
-                  Coding
-                </button>
+                {showCodingTab && (
+                  <button
+                    onClick={() => setActiveTab('coding')}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
+                      activeTab === 'coding'
+                        ? 'bg-cyan-600 text-white shadow-lg'
+                        : 'bg-gray-800 text-gray-400 hover:bg-cyan-500 hover:text-white'
+                    }`}
+                  >
+                    Coding
+                  </button>
+                )}
               </div>
               <button
                 onClick={() => setSelectedCategory(null)}
