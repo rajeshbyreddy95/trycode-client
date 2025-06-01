@@ -10,6 +10,31 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+// Custom CSS for code blocks to resemble a "prettier" format
+const codeBlockStyles = `
+  .custom-code-block {
+    font-family: 'Fira Code', 'Consolas', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    background-color: #1a1a1a !important;
+    border: 1px solid #333 !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    margin: 16px 0 !important;
+    overflow-x: auto !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+  .custom-code-block * {
+    font-family: inherit !important;
+  }
+`;
+
+// Inject the custom styles into the document
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = codeBlockStyles;
+document.head.appendChild(styleSheet);
+
 // Prepare the question data by mapping the JSON structure to the component's expected format
 const questionData = [
   // JavaScript Theory questions
@@ -73,7 +98,7 @@ const questionData = [
     category: 'sql',
     type: 'theory',
     question: item.title,
-    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`sql\n${item.code}\n\`\`\`` : ''}`, // Fixed language to 'sql'
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`sql\n${item.code}\n\`\`\`` : ''}`,
   })),
   // SQL Query questions (mapped to "coding" tab)
   ...sqlquestions.query.map((item, index) => ({
@@ -228,6 +253,7 @@ const InterviewQuestions = () => {
                               style={vscDarkPlus}
                               language={match[1]}
                               PreTag="div"
+                              className="custom-code-block"
                               {...props}
                             >
                               {String(children).replace(/\n$/, '')}

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
+
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Tutorials', path: '/tutorials' },
@@ -14,112 +15,247 @@ const Nav = () => {
     { name: 'Store', path: '/store' },
     { name: 'Contact', path: '/contact-us' },
   ];
+
+  // Animation variants for the mobile sidebar
+  const sidebarVariants = {
+    open: {
+      x: 0,
+      opacity: 1,
+      transition: { duration: 0.3, ease: 'easeInOut' },
+    },
+    closed: {
+      x: '-100%',
+      opacity: 0,
+      transition: { duration: 0.3, ease: 'easeInOut' },
+    },
+  };
+
+  // Animation variants for nav links
+  const linkVariants = {
+    hover: {
+      scale: 1.1,
+      color: '#00eaff',
+      textShadow: '0 0 10px rgba(0, 234, 255, 0.8)',
+      transition: { duration: 0.2 },
+    },
+  };
+
+  // Animation variants for the login button
+  const buttonVariants = {
+    hover: {
+      scale: 1.05,
+      boxShadow: '0 0 15px rgba(255, 0, 255, 0.5)',
+      transition: { duration: 0.2 },
+    },
+    tap: {
+      scale: 0.95,
+      transition: { duration: 0.1 },
+    },
+  };
+
   return (
-    <header className=" text-white shadow-md  top-0 w-full z-50 p-4">
-      <div className="flex items-center justify-evenly px-4 py-4 md:px-8 lg:px-12">
-        {/* Logo */}
-        <div className="text-2xl font-bold bg-gradient-to-r from-[#6a5acd] to-[#00bfff] bg-clip-text text-white">
-          tryCode
-        </div>
-<div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-cyan-500 rounded-full blur-[160px] opacity-20 animate-pulse" />
-        <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-violet-500 rounded-full blur-[160px] opacity-20 animate-pulse" />
-      </div>
-        {/* Desktop & iPad Nav */}
-        <nav className="hidden lg:flex space-x-6 relative">
-          <style>
-            {`
-              .glow-border::before {
-                content: '';
-                position: absolute;
-                top: -2px;
-                left: -2px;
-                right: -2px;
-                bottom: -2px;
-                border-radius: 9999px;
-                background: linear-gradient(90deg, #6a5acd, transparent, #00bfff);
-                background-size: 300% 100%;
-                animation: glowMove 6s linear infinite;
-                z-index: -1;
-              }
-              @keyframes glowMove {
-                0% { background-position: 0% 50%; }
-                100% { background-position: 100% 50%; }
-              }
-            `}
-          </style>
-          <div className="glow-border relative bg-black bg-opacity-20 px-6 py-2 rounded-full backdrop-blur-md">
-            <ul className="flex items-center gap-6">
-              {navItems.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    to={item.path}
-                    className="hover:text-[#00bfff] transition-colors text-sm"
-                    style={{ textShadow: '0 0 5px rgba(0, 191, 255, 0.5)' }}
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
+    <header className="fixed top-0 w-full z-50">
+      {/* Global Styles */}
+      <style>
+        {`
+          .glassmorphism {
+            background: rgba(20, 20, 40, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          }
 
-        {/* Login Button (visible on tablet and up) */}
-        <motion.button
-          whileHover={{ scale: 1.05, boxShadow: '0 0 10px rgba(0, 191, 255, 0.6)' }}
-          className="hidden md:inline-block bg-gradient-to-r from-[#6a5acd] to-[#00bfff] text-white px-4 py-2 rounded-full font-semibold text-sm"
-        >
-          Login
-        </motion.button>
+          .neon-glow {
+            background: linear-gradient(90deg, #ff00ff, #00eaff, #ff00ff);
+            background-size: 200%;
+            animation: gradientShift 8s linear infinite;
+          }
 
-        {/* Mobile/Tablet Menu Toggle */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden text-white focus:outline-none"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16m-7 6h7'}
-            />
-          </svg>
-        </button>
+          @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+          }
+
+          .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            background: #00eaff;
+            transition: width 0.3s ease;
+            margin-top: 2px;
+          }
+
+          .nav-link:hover::after {
+            width: 100%;
+          }
+
+          .hamburger-line {
+            transition: all 0.3s ease;
+          }
+
+          .hamburger-open .line1 {
+            transform: rotate(45deg) translate(5px, 5px);
+          }
+
+          .hamburger-open .line2 {
+            opacity: 0;
+          }
+
+          .hamburger-open .line3 {
+            transform: rotate(-45deg) translate(5px, -5px);
+          }
+
+          .overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+          }
+        `}
+      </style>
+
+      {/* Background Effects */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-150px] left-[-150px] w-[500px] h-[500px] bg-magenta-500 rounded-full blur-[200px] opacity-20 animate-pulse" />
+        <div className="absolute bottom-[-150px] right-[-150px] w-[500px] h-[500px] bg-cyan-500 rounded-full blur-[200px] opacity-20 animate-pulse" />
       </div>
 
-      {/* Mobile & iPad Menu */}
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          transition={{ duration: 0.3 }}
-          className="lg:hidden bg-[#1e1a3c] px-4 pb-4"
-        >
-          <ul className="flex flex-col items-center gap-4 pt-4 text-base">
-            {navItems.map((item) => (
-              <li key={item.name}>
+      {/* Main Nav Container */}
+      <div className="relative glassmorphism text-white px-4 py-3 md:px-8 lg:px-12">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl font-extrabold bg-gradient-to-r from-magenta-400 to-cyan-400 bg-clip-text text-transparent"
+          >
+            tryCode
+          </motion.div>
+
+          {/* Desktop & Tablet Nav */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navItems.map((item, index) => (
+              <motion.div key={item.name} variants={linkVariants} whileHover="hover">
                 <Link
                   to={item.path}
-                  className="text-white hover:text-[#00bfff] transition"
-                  onClick={() => setIsOpen(false)}
+                  className="nav-link text-sm lg:text-base font-medium text-gray-200 relative"
                 >
                   {item.name}
                 </Link>
-              </li>
+              </motion.div>
             ))}
-            <li>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="bg-gradient-to-r from-[#6a5acd] to-[#00bfff] px-6 py-2 text-white rounded-full"
-              >
-                Login
-              </motion.button>
-            </li>
-          </ul>
-        </motion.div>
-      )}
+            {/* Login Button */}
+            <motion.button
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              className="neon-glow text-sm lg:text-base font-semibold text-white px-4 lg:px-6 py-2 rounded-full"
+            >
+              Login
+            </motion.button>
+          </nav>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden text-white focus:outline-none z-50"
+          >
+            <div className={`flex flex-col gap-1.5 ${isOpen ? 'hamburger-open' : ''}`}>
+              <span className="hamburger-line line1 w-6 h-0.5 bg-white rounded-full"></span>
+              <span className="hamburger-line line2 w-6 h-0.5 bg-white rounded-full"></span>
+              <span className="hamburger-line line3 w-6 h-0.5 bg-white rounded-full"></span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Sidebar Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 overlay z-40 md:hidden"
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Sidebar */}
+            <motion.div
+              variants={sidebarVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+              className="fixed top-0 left-0 w-64 h-full bg-gradient-to-b from-[#141428] to-[#1e1a3c] z-50 md:hidden shadow-2xl"
+            >
+              <div className="flex flex-col h-full p-6">
+                {/* Sidebar Header */}
+                <div className="flex justify-between items-center mb-8">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-2xl font-bold bg-gradient-to-r from-magenta-400 to-cyan-400 bg-clip-text text-transparent"
+                  >
+                    tryCode
+                  </motion.div>
+                  <button onClick={() => setIsOpen(false)} className="text-white">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Sidebar Links */}
+                <ul className="flex flex-col gap-6 text-lg">
+                  {navItems.map((item, index) => (
+                    <motion.li
+                      key={item.name}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.3 }}
+                    >
+                      <Link
+                        to={item.path}
+                        className="text-gray-200 hover:text-cyan-400 transition-colors"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    </motion.li>
+                  ))}
+                </ul>
+
+                {/* Sidebar Login Button */}
+                <motion.div
+                  className="mt-auto"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.3 }}
+                >
+                  <motion.button
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="neon-glow w-full text-center font-semibold text-white px-6 py-3 rounded-full"
+                  >
+                    Login
+                  </motion.button>
+                </motion.div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
