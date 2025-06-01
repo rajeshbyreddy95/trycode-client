@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import {jsquestions} from './javascript';
 import {react} from './react';
+import {nodequestions} from './node';
 
 // Prepare the question data by mapping the JSON structure to the component's expected format
 const questionData = [
@@ -36,9 +37,17 @@ const questionData = [
     question: item.title,
     answer: `${item.content}\n\n**Code Example:**\n\`\`\`jsx\n${item.code}\n\`\`\``,
   })),
+  // Node.js Theory questions
+  ...nodequestions.theory.map((item, index) => ({
+    id: item.id,
+    category: 'Node.js',
+    type: 'theory',
+    question: item.title,
+    answer: `${item.content}\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\``,
+  })),
 ];
 
-// Extract unique categories ("JavaScript" and "React")
+// Extract unique categories ("JavaScript", "React", and "Node.js")
 const categories = [...new Set(questionData.map(q => q.category))];
 
 const InterviewQuestions = () => {
