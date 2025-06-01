@@ -1,8 +1,13 @@
-/* trycode/client/src/pages/InterviewQuestions.js */
 import React, { useState } from 'react';
-import {jsquestions} from './javascript';
-import {react} from './react';
-import {nodequestions} from './node';
+import { jsquestions } from './javascript';
+import { react } from './react';
+import { nodequestions } from './node';
+import { expressquestions } from './express';
+import { devopsquestions } from './devops';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // Prepare the question data by mapping the JSON structure to the component's expected format
 const questionData = [
@@ -12,7 +17,7 @@ const questionData = [
     category: 'JavaScript',
     type: 'theory',
     question: item.title,
-    answer: `${item.content}\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\``,
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
   })),
   // JavaScript Practice questions (combine basic and intermediate into a single "coding" category)
   ...jsquestions.practice.basic.map((item, index) => ({
@@ -20,14 +25,14 @@ const questionData = [
     category: 'JavaScript',
     type: 'coding',
     question: item.title,
-    answer: `${item.content}\n\n**Solution:**\n\`\`\`javascript\n${item.code}\n\`\`\``,
+    answer: `${item.content}${item.code ? `\n\n**Solution:**\n\`\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
   })),
   ...jsquestions.practice.intermediate.map((item, index) => ({
     id: item.id,
     category: 'JavaScript',
     type: 'coding',
     question: item.title,
-    answer: `${item.content}\n\n**Solution:**\n\`\`\`javascript\n${item.code}\n\`\`\``,
+    answer: `${item.content}${item.code ? `\n\n**Solution:**\n\`\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
   })),
   // React Theory questions
   ...react.theory.map((item, index) => ({
@@ -35,7 +40,7 @@ const questionData = [
     category: 'React',
     type: 'theory',
     question: item.title,
-    answer: `${item.content}\n\n**Code Example:**\n\`\`\`jsx\n${item.code}\n\`\`\``,
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`jsx\n${item.code}\n\`\`\`` : ''}`,
   })),
   // Node.js Theory questions
   ...nodequestions.theory.map((item, index) => ({
@@ -43,11 +48,27 @@ const questionData = [
     category: 'Node.js',
     type: 'theory',
     question: item.title,
-    answer: `${item.content}\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\``,
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
+  })),
+  // Express.js Theory questions
+  ...expressquestions.theory.map((item, index) => ({
+    id: item.id,
+    category: 'express.js',
+    type: 'theory',
+    question: item.title,
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
+  })),
+  // DevOps Theory questions
+  ...devopsquestions.theory.map((item, index) => ({
+    id: item.id,
+    category: 'devOps',
+    type: 'theory',
+    question: item.title,
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
   })),
 ];
 
-// Extract unique categories ("JavaScript", "React", and "Node.js")
+// Extract unique categories ("JavaScript", "React", "Node.js", "express.js", "devOps")
 const categories = [...new Set(questionData.map(q => q.category))];
 
 const InterviewQuestions = () => {
@@ -179,7 +200,32 @@ const InterviewQuestions = () => {
               {currentQuestion ? (
                 <div>
                   <h2 className="text-2xl font-bold text-cyan-400 mb-4">{currentQuestion.question}</h2>
-                  <p className="text-gray-300 whitespace-pre-wrap">{currentQuestion.answer}</p>
+                  <div className="text-gray-300"> {/* Apply className to the wrapper div */}
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        code({ node, inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || '');
+                          return !inline && match ? (
+                            <SyntaxHighlighter
+                              style={vscDarkPlus}
+                              language={match[1]}
+                              PreTag="div"
+                              {...props}
+                            >
+                              {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
+                    >
+                      {currentQuestion.answer}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               ) : (
                 <p className="text-gray-400">No questions available in this category.</p>
