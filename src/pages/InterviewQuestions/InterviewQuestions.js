@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { jsquestions } from './javascript';
 import { react } from './react';
 import { nodequestions } from './node';
 import { expressquestions } from './express';
 import { sqlquestions } from './sql';
 import { devopsquestions } from './devops';
-import { pythonquestions } from './pyhton'; // Fixed typo: pyhton -> python
+import { pythonquestions } from './python';
 import { javaquestions } from './java';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -45,7 +46,7 @@ const questionData = [
     category: 'JavaScript',
     type: 'theory',
     question: item.title,
-    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
+    answer: `${item.content}${item.code ? `\ Township\`\`javascript\n${item.code}\n\`\`\`` : ''}`,
   })),
   // JavaScript Practice questions (combine basic and intermediate into a single "coding" category)
   ...jsquestions.practice.basic.map((item, index) => ({
@@ -147,18 +148,28 @@ const questionData = [
 // Extract unique categories ("JavaScript", "React", "Node.js", "express.js", "devOps", "sql", "Java", "Python")
 const categories = [...new Set(questionData.map(q => q.category))];
 
+// Normalize category for URL (lowercase, remove special characters)
+const normalizeCategoryForUrl = (category) => category.toLowerCase().replace(/\./g, '');
+
 const InterviewQuestions = () => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const { category: categoryFromUrl } = useParams(); // Extract category from URL
+  const navigate = useNavigate();
+
+  // Determine selected category based on URL
+  const selectedCategory = categories.find(
+    (cat) => normalizeCategoryForUrl(cat) === (categoryFromUrl || '').toLowerCase()
+  ) || null;
+
   const [activeTab, setActiveTab] = useState('theory');
   const [selectedQuestion, setSelectedQuestion] = useState(null);
 
   // Filter questions based on selected category and active tab
   const filteredQuestions = questionData.filter(
-    q => q.category === selectedCategory && q.type === activeTab
+    (q) => q.category === selectedCategory && q.type === activeTab
   );
 
   // Automatically select the first question when the category or tab changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (filteredQuestions.length > 0) {
       setSelectedQuestion(filteredQuestions[0].id);
     } else {
@@ -167,7 +178,7 @@ const InterviewQuestions = () => {
   }, [selectedCategory, activeTab]);
 
   // Find the currently selected question's details
-  const currentQuestion = filteredQuestions.find(q => q.id === selectedQuestion);
+  const currentQuestion = filteredQuestions.find((q) => q.id === selectedQuestion);
 
   // Determine if the "Coding" tab should be shown (for JavaScript, SQL, Java, and Python)
   const showCodingTab = ['JavaScript', 'sql', 'Java', 'Python'].includes(selectedCategory);
@@ -180,11 +191,11 @@ const InterviewQuestions = () => {
 
       {/* Category Selection */}
       {!selectedCategory && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-6 justify-center">
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => navigate(`/interviewquestions/${normalizeCategoryForUrl(cat)}`)}
               className="bg-[#111] rounded-xl p-6 text-center shadow-lg hover:shadow-cyan-500/40 transition duration-300"
             >
               <h2 className="text-xl font-bold text-cyan-400 mb-2">{cat}</h2>
@@ -226,7 +237,7 @@ const InterviewQuestions = () => {
                 )}
               </div>
               <button
-                onClick={() => setSelectedCategory(null)}
+                onClick={() => navigate('/interviewquestions')}
                 className="text-sm bg-gray-800 px-3 py-1 rounded-full text-gray-300 hover:bg-gray-700"
               >
                 ← Back to Topics

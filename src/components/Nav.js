@@ -7,13 +7,14 @@ const Nav = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Tutorials', path: '/tutorials' },
-    { name: 'Interview Qs', path: '/interview-questions' },
+    
+    { name: 'Interview Qs', path: '/interviewquestions' },
     { name: 'Projects', path: '/projects' },
     { name: 'Jobs', path: '/jobs' },
     { name: 'Roadmaps', path: '/roadmaps' },
     { name: 'Store', path: '/store' },
     { name: 'Contact', path: '/contact-us' },
+    { name: 'About Us', path: '/aboutUs'}
   ];
 
   // Animation variants for the mobile sidebar
