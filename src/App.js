@@ -21,6 +21,7 @@ const App = () => {
         {/* Dynamic route for specific categories */}
         <Route path="/interviewquestions/:category" element={<InterviewQuestions />} />
         <Route path="/AboutUs" element={<Aboutus />} />
+        <Route path="/roadmaps/:topic" element={<Roadmaps />} />
       </Routes>
     </BrowserRouter>
   )
