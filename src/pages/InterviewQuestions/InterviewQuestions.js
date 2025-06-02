@@ -5,6 +5,8 @@ import { nodequestions } from './node';
 import { expressquestions } from './express';
 import { sqlquestions } from './sql';
 import { devopsquestions } from './devops';
+import { pythonquestions } from './pyhton'; // Fixed typo: pyhton -> python
+import { javaquestions } from './java';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -108,9 +110,41 @@ const questionData = [
     question: item.title,
     answer: `${item.content}${item.code ? `\n\n**Solution:**\n\`\`\`sql\n${item.code}\n\`\`\`` : ''}`,
   })),
+  // Java Theory questions
+  ...javaquestions.theory.map((item, index) => ({
+    id: item.id,
+    category: 'Java',
+    type: 'theory',
+    question: item.title,
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`java\n${item.code}\n\`\`\`` : ''}`,
+  })),
+  // Java Coding questions
+  ...javaquestions.coding.map((item, index) => ({
+    id: item.id,
+    category: 'Java',
+    type: 'coding',
+    question: item.title,
+    answer: `${item.content}${item.code ? `\n\n**Solution:**\n\`\`\`java\n${item.code}\n\`\`\`` : ''}`,
+  })),
+  // Python Theory questions
+  ...pythonquestions.theory.map((item, index) => ({
+    id: item.id,
+    category: 'Python',
+    type: 'theory',
+    question: item.title,
+    answer: `${item.content}${item.code ? `\n\n**Code Example:**\n\`\`\`python\n${item.code}\n\`\`\`` : ''}`,
+  })),
+  // Python Coding questions
+  ...pythonquestions.coding.map((item, index) => ({
+    id: item.id,
+    category: 'Python',
+    type: 'coding',
+    question: item.title,
+    answer: `${item.content}${item.code ? `\n\n**Solution:**\n\`\`\`python\n${item.code}\n\`\`\`` : ''}`,
+  })),
 ];
 
-// Extract unique categories ("JavaScript", "React", "Node.js", "express.js", "devOps", "sql")
+// Extract unique categories ("JavaScript", "React", "Node.js", "express.js", "devOps", "sql", "Java", "Python")
 const categories = [...new Set(questionData.map(q => q.category))];
 
 const InterviewQuestions = () => {
@@ -135,8 +169,8 @@ const InterviewQuestions = () => {
   // Find the currently selected question's details
   const currentQuestion = filteredQuestions.find(q => q.id === selectedQuestion);
 
-  // Determine if the "Coding" tab should be shown (for JavaScript and SQL)
-  const showCodingTab = selectedCategory === 'JavaScript' || selectedCategory === 'sql';
+  // Determine if the "Coding" tab should be shown (for JavaScript, SQL, Java, and Python)
+  const showCodingTab = ['JavaScript', 'sql', 'Java', 'Python'].includes(selectedCategory);
 
   return (
     <div className="min-h-screen bg-black text-white py-12 px-6 md:px-12">
