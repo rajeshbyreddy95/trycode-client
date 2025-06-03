@@ -1,20 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { auth } from '../firebase/firebaseConfig';
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // Listen for authentication state changes
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const navItems = [
     { name: 'Home', path: '/' },
-    
     { name: 'Interview Qs', path: '/interviewquestions' },
     { name: 'Projects', path: '/projects' },
     { name: 'Jobs', path: '/jobs' },
     { name: 'Roadmaps', path: '/roadmaps' },
     { name: 'Store', path: '/store' },
     { name: 'Contact', path: '/contact-us' },
-    { name: 'About Us', path: '/aboutUs'}
+    { name: 'About Us', path: '/aboutUs' },
   ];
 
   // Animation variants for the mobile sidebar
@@ -41,7 +50,7 @@ const Nav = () => {
     },
   };
 
-  // Animation variants for the login button
+  // Animation variants for the login button and profile icon
   const buttonVariants = {
     hover: {
       scale: 1.05,
@@ -50,6 +59,19 @@ const Nav = () => {
     },
     tap: {
       scale: 0.95,
+      transition: { duration: 0.1 },
+    },
+  };
+
+  // Animation variants for the profile icon
+  const iconVariants = {
+    hover: {
+      scale: 1.2,
+      rotate: 5,
+      transition: { duration: 0.2 },
+    },
+    tap: {
+      scale: 0.9,
       transition: { duration: 0.1 },
     },
   };
@@ -131,7 +153,7 @@ const Nav = () => {
             transition={{ duration: 0.5 }}
             className="text-3xl font-extrabold bg-gradient-to-r from-magenta-400 to-cyan-400 bg-clip-text text-transparent"
           >
-            tryCode
+            <Link to={'/'}>try Code</Link>
           </motion.div>
 
           {/* Desktop & Tablet Nav */}
@@ -146,15 +168,34 @@ const Nav = () => {
                 </Link>
               </motion.div>
             ))}
-            {/* Login Button */}
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              className="neon-glow text-sm lg:text-base font-semibold text-white px-4 lg:px-6 py-2 rounded-full"
-            >
-              Login
-            </motion.button>
+            {/* Conditional Rendering: Login Button or Profile Icon */}
+            {user ? (
+              <motion.div
+                variants={iconVariants}
+                whileHover="hover"
+                whileTap="tap"
+                className="text-white"
+              >
+                <Link to="/profile">
+                  <svg
+                    className="w-6 h-6 lg:w-8 lg:h-8 fill-current text-gray-200 hover:text-cyan-400 transition"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-6 2.67-6 6v2h12v-2c0-3.33-2.67-6-6-6z" />
+                  </svg>
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.button
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                className="neon-glow text-sm lg:text-base font-semibold text-white px-4 lg:px-6 py-2 rounded-full"
+              >
+                <Link to="/login">Login</Link>
+              </motion.button>
+            )}
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -236,21 +277,36 @@ const Nav = () => {
                   ))}
                 </ul>
 
-                {/* Sidebar Login Button */}
+                {/* Sidebar Button (Profile or Login) at the Bottom */}
                 <motion.div
                   className="mt-auto"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.3 }}
                 >
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    className="neon-glow w-full text-center font-semibold text-white px-6 py-3 rounded-full"
-                  >
-                    Login
-                  </motion.button>
+                  {user ? (
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      className="neon-glow w-full text-center font-semibold text-white px-6 py-3 rounded-full"
+                    >
+                      <Link to="/profile" onClick={() => setIsOpen(false)}>
+                        Profile
+                      </Link>
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      className="neon-glow w-full text-center font-semibold text-white px-6 py-3 rounded-full"
+                    >
+                      <Link to="/login" onClick={() => setIsOpen(false)}>
+                        Login
+                      </Link>
+                    </motion.button>
+                  )}
                 </motion.div>
               </div>
             </motion.div>

@@ -1,147 +1,241 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import {dsa} from './DSA/dsa'; // Import the DSA roadmap
+import { motion, AnimatePresence } from 'framer-motion';
+import { javaRoadmapData } from './java';
+import { pythonroadmap } from './python';
 
-// List of all roadmaps (add more as they are created)
-const allRoadmaps = [dsa];
-
-// Categories for filtering
-const categories = ['All', 'Computer Science']; // Update as more roadmaps are added
+// List of all roadmaps (Java and Python)
+const allRoadmaps = [
+  {
+    id: 'java',
+    title: javaRoadmapData.courseTitle,
+    description: javaRoadmapData.description,
+    route: '/roadmaps/java',
+    image: 'https://www.dremendo.com/java-programming-tutorial/images/java-programming-tutorial.jpg',
+  },
+  {
+    id: 'python', // Fixed: Unique id for Python
+    title: pythonroadmap.courseTitle,
+    description: pythonroadmap.description,
+    route: '/roadmaps/python', // Fixed: Corrected typo from 'pyton' to 'python'
+    image: 'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg?auto=compress&cs=tinysrgb&w=800', // Python-specific image
+  },
+];
 
 const Roadmaps = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [expandedMilestone, setExpandedMilestone] = useState(null);
   const navigate = useNavigate();
-  const { topic } = useParams(); // Get the topic from the URL (e.g., /roadmaps/dsa)
+  const { topic } = useParams();
+  const [openStages, setOpenStages] = useState(() => {
+    const saved = localStorage.getItem(`${topic}RoadmapOpenStages`);
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [completedItems, setCompletedItems] = useState(() => {
+    const saved = localStorage.getItem(`${topic}RoadmapCompletedItems`);
+    return saved ? JSON.parse(saved) : {};
+  });
 
-  // Filter roadmaps based on category and topic
-  const filteredRoadmaps = topic
-    ? allRoadmaps.filter((roadmap) => roadmap.route === `/roadmaps/${topic}`)
-    : selectedCategory === 'All'
-      ? allRoadmaps
-      : allRoadmaps.filter((r) => r.category === selectedCategory);
+  useEffect(() => {
+    if (topic) {
+      localStorage.setItem(`${topic}RoadmapOpenStages`, JSON.stringify(openStages));
+    }
+  }, [openStages, topic]);
 
-  const handleMilestoneToggle = (index) => {
-    setExpandedMilestone(expandedMilestone === index ? null : index);
+  useEffect(() => {
+    if (topic) {
+      localStorage.setItem(`${topic}RoadmapCompletedItems`, JSON.stringify(completedItems));
+    }
+  }, [completedItems, topic]);
+
+  const toggleStage = (stageIndex) => {
+    setOpenStages((prev) => ({
+      ...prev,
+      [stageIndex]: !prev[stageIndex],
+    }));
   };
 
-  return (
-    <div className="min-h-screen bg-black text-white py-12 px-6">
-      <h1 className="text-4xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 text-center">
-        Roadmaps
-      </h1>
+  const toggleComplete = (stageIndex, type, itemIndex) => {
+    setCompletedItems((prev) => {
+      const stageData = prev[stageIndex] || {};
+      const typeData = stageData[type] || {};
+      return {
+        ...prev,
+        [stageIndex]: {
+          ...stageData,
+          [type]: {
+            ...typeData,
+            [itemIndex]: !typeData[itemIndex],
+          },
+        },
+      };
+    });
+  };
 
-      {/* Desktop Filter (only shown if no specific topic is selected) */}
-      {!topic && (
-        <div className="hidden md:flex justify-center gap-6 mb-12">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-6 py-2 rounded-full font-semibold transition ${
-                selectedCategory === cat
-                  ? 'bg-cyan-600 text-white shadow-lg'
-                  : 'bg-gray-900 text-gray-400 hover:bg-cyan-700 hover:text-white'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+  // Render the detailed roadmap view for a specific topic
+  const renderDetailedRoadmap = (roadmapData) => {
+    return (
+      <div className="min-h-screen bg-black text-white py-12 px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <div className="max-w-4xl mx-auto text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 mb-4">
+            {roadmapData.courseTitle}
+          </h1>
+          <p className="text-gray-400 text-lg">{roadmapData.description}</p>
         </div>
-      )}
 
-      {/* Mobile Filter (only shown if no specific topic is selected) */}
-      {!topic && (
-        <div className="md:hidden mb-8 flex justify-center">
-          <select
-            className="bg-gray-900 text-white rounded-full px-4 py-2 w-56 text-center focus:outline-none"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* Roadmaps Display */}
-      {filteredRoadmaps.length === 0 ? (
-        <p className="text-center text-gray-500 col-span-full">
-          No roadmaps found.
-        </p>
-      ) : (
-        filteredRoadmaps.map((roadmap) => (
-          <div key={roadmap.id} className="mb-12">
-            {/* Roadmap Card (only shown on /roadmaps) */}
-            {!topic && (
+        {/* Stages Section */}
+        <div className="max-w-4xl mx-auto">
+          {roadmapData.stages.map((stage, index) => (
+            <div key={index} className="mb-6">
+              {/* Stage Header */}
               <div
-                onClick={() => navigate(roadmap.route)}
-                className="cursor-pointer relative bg-[#111] rounded-xl border border-gray-800 p-6 shadow-xl transition-shadow hover:shadow-cyan-600/50 mb-8 max-w-7xl mx-auto"
-                style={{
-                  boxShadow:
-                    '0 8px 15px rgba(0, 191, 255, 0.5), 8px 0 15px rgba(0, 191, 255, 0.3), -8px 0 15px rgba(0, 191, 255, 0.3)',
-                }}
+                onClick={() => toggleStage(index)}
+                className="flex items-center justify-between bg-[#111] rounded-xl p-4 shadow-lg hover:shadow-cyan-500/40 transition duration-300 cursor-pointer"
               >
-                <img
-                  src={roadmap.image}
-                  alt={roadmap.title}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-xl font-bold text-cyan-400 mb-2">{roadmap.title}</h3>
-                <p className="text-gray-400 text-sm">{roadmap.description}</p>
+                <div>
+                  <h3 className="text-xl font-semibold text-cyan-400">
+                    {stage.stage}: {stage.title}
+                  </h3>
+                  <p className="text-gray-400 text-sm">{stage.goal}</p>
+                </div>
+                <span className="text-gray-400">
+                  {openStages[index] ? '▼' : '▶'}
+                </span>
               </div>
-            )}
 
-            {/* Detailed Roadmap View (shown on /roadmaps/:topic) */}
-            {topic && (
-              <div className="max-w-7xl mx-auto">
-                <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 mb-8">
-                  {roadmap.title}
-                </h2>
-                <p className="text-gray-400 mb-12">{roadmap.description}</p>
-
-                {/* Milestones */}
-                {roadmap.milestones.map((milestone, index) => (
+              {/* Dropdown Content */}
+              <AnimatePresence>
+                {openStages[index] && (
                   <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-[#111] rounded-xl p-6 mb-4 shadow-lg hover:shadow-cyan-500/40 transition duration-300"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-[#222] rounded-xl p-6 mt-2 text-gray-300 overflow-hidden"
                   >
-                    <div
-                      className="flex justify-between items-center cursor-pointer"
-                      onClick={() => handleMilestoneToggle(index)}
-                    >
-                      <h3 className="text-xl font-semibold text-cyan-400">{milestone.title}</h3>
-                      <span className="text-gray-400">
-                        {expandedMilestone === index ? '▼' : '▶'}
-                      </span>
-                    </div>
-                    {expandedMilestone === index && (
-                      <div className="mt-4 text-gray-400">
-                        <p className="mb-4">{milestone.description}</p>
-                        <h4 className="text-lg font-semibold text-violet-400">Project</h4>
-                        <p className="font-medium">{milestone.project.title}</p>
-                        <p className="mb-4">{milestone.project.description}</p>
-                        <h4 className="text-lg font-semibold text-violet-400">Interview Preparation</h4>
-                        <p className="font-medium">Theory Question:</p>
-                        <p className="mb-2">{milestone.interview.theory}</p>
-                        <p className="font-medium">Coding Question:</p>
-                        <p>{milestone.interview.coding_question}</p>
-                      </div>
+                    <h4 className="text-lg font-semibold text-violet-400 mb-2">Topics Covered:</h4>
+                    <ul className="mb-4">
+                      {stage.topics.map((topic, i) => (
+                        <li key={i} className="flex items-center py-1">
+                          <input
+                            type="checkbox"
+                            checked={completedItems[index]?.topics?.[i] || false}
+                            onChange={() => toggleComplete(index, 'topics', i)}
+                            className="w-4 h-4 text-violet-500 bg-gray-900 border-gray-700 rounded focus:ring-violet-500 focus:ring-2 mr-3"
+                          />
+                          <span className={completedItems[index]?.topics?.[i] ? 'line-through text-gray-500' : 'text-gray-300'}>
+                            {topic}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {stage.practiceQuestions && (
+                      <>
+                        <h4 className="text-lg font-semibold text-violet-400 mb-2">Practice Questions:</h4>
+                        <ul className="mb-4">
+                          {stage.practiceQuestions.map((question, i) => (
+                            <li key={i} className="flex items-center py-1">
+                              <input
+                                type="checkbox"
+                                checked={completedItems[index]?.practiceQuestions?.[i] || false}
+                                onChange={() => toggleComplete(index, 'practiceQuestions', i)}
+                                className="w-4 h-4 text-violet-500 bg-gray-900 border-gray-700 rounded focus:ring-violet-500 focus:ring-2 mr-3"
+                              />
+                              <span className={completedItems[index]?.practiceQuestions?.[i] ? 'line-through text-gray-500' : 'text-gray-300'}>
+                                {question}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+
+                    {stage.projectIdeas && (
+                      <>
+                        <h4 className="text-lg font-semibold text-violet-400 mb-2">Project Ideas:</h4>
+                        <ul className="mb-4">
+                          {stage.projectIdeas.map((project, i) => (
+                            <li key={i} className="flex items-center py-1">
+                              <input
+                                type="checkbox"
+                                checked={completedItems[index]?.projectIdeas?.[i] || false}
+                                onChange={() => toggleComplete(index, 'projectIdeas', i)}
+                                className="w-4 h-4 text-violet-500 bg-gray-900 border-gray-700 rounded focus:ring-violet-500 focus:ring-2 mr-3"
+                              />
+                              <span className={completedItems[index]?.projectIdeas?.[i] ? 'line-through text-gray-500' : 'text-gray-300'}>
+                                {project}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </>
                     )}
                   </motion.div>
-                ))}
-              </div>
-            )}
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        {/* Bonus Section */}
+        <div className="max-w-4xl mx-auto mt-12">
+          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 mb-4">
+            {roadmapData.bonus.title}
+          </h2>
+          <ul className="list-disc pl-5 text-gray-300">
+            {roadmapData.bonus.topics.map((topic, i) => (
+              <li key={i}>{topic}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
+  // Main render logic
+  if (topic) {
+    if (topic === 'java') {
+      return renderDetailedRoadmap(javaRoadmapData);
+    } else if (topic === 'python') { // Added: Support for Python roadmap
+      return renderDetailedRoadmap(pythonroadmap);
+    }
+    return (
+      <div className="min-h-screen bg-black text-white py-12 px-4 sm:px-6 lg:px-8">
+        <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 mb-8">
+          Roadmap Not Found
+        </h1>
+        <p className="text-gray-400 text-center">The roadmap you’re looking for doesn’t exist.</p>
+      </div>
+    );
+  }
+
+  // Render the list of roadmap cards
+  return (
+    <div className="min-h-screen bg-black text-white py-12 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 mb-12">
+        Available Roadmaps
+      </h1>
+      <div className="max-w-4xl mx-auto grid gap-8">
+        {allRoadmaps.map((roadmap) => (
+          <div
+            key={roadmap.id} // Uses unique id for each roadmap
+            onClick={() => navigate(roadmap.route)}
+            className="cursor-pointer bg-[#111] rounded-xl border border-gray-800 p-6 shadow-xl transition-shadow hover:shadow-cyan-600/50"
+            style={{
+              boxShadow:
+                '0 8px 15px rgba(0, 191, 255, 0.5), 8px 0 15px rgba(0, 191, 255, 0.3), -8px 0 15px rgba(0, 191, 255, 0.3)',
+            }}
+          >
+            <img
+              src={roadmap.image}
+              alt={roadmap.title}
+              className="w-full h-48 object-cover rounded-lg mb-4"
+            />
+            <h3 className="text-xl font-bold text-cyan-400 mb-2">{roadmap.title}</h3>
+            <p className="text-gray-400 text-sm">{roadmap.description}</p>
           </div>
-        ))
-      )}
+        ))}
+      </div>
     </div>
   );
 };

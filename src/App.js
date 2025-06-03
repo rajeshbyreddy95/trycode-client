@@ -8,6 +8,9 @@ import Html from './pages/Tutorials/html/Html'
 import InterviewQuestions from './pages/InterviewQuestions/InterviewQuestions'
 import Contact from './pages/Contact/Contact'
 import Aboutus from './pages/About/Aboutus'
+import Signup from './pages/Auth/Signup'
+import Login from './pages/Auth/Login'
+import Profile from './components/Profile'
 const App = () => {
   return ( 
     <BrowserRouter>
@@ -22,6 +25,9 @@ const App = () => {
         <Route path="/interviewquestions/:category" element={<InterviewQuestions />} />
         <Route path="/AboutUs" element={<Aboutus />} />
         <Route path="/roadmaps/:topic" element={<Roadmaps />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   )
