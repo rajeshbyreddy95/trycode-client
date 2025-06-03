@@ -185,7 +185,7 @@ const InterviewQuestions = () => {
 
   return (
     <div className="min-h-screen bg-black text-white py-12 px-6 md:px-12">
-      <h1 className="text-4xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 text-center">
+      <h1 className="text-4xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-500 text-center mt-20">
         Interview Questions
       </h1>
 

@@ -7,10 +7,10 @@ body{
   font-variation-settings:
     "wdth" 100,
     "YTLC" 500;
-    /* -webkit-user-select: none; 
+    -webkit-user-select: none; 
   -moz-user-select: none;    
   -ms-user-select: none;     
-  user-select: none;          */
+  user-select: none;         
 }
 body::selection{
   user-select: none;
