@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import axios from 'axios';
 import Nav from '../../components/Nav';
-import '../../App.css';
 import Footer from '../../components/Footer';
 import { auth, googleProvider, signInWithPopup } from '../../firebase/firebaseConfig';
-import { useNavigate, useNavigation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import '../../App.css';
 
 const Login = () => {
-
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -23,25 +22,14 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setMessage('');
     setError('');
 
-    try {
-      const response = await axios.post('http://localhost:5000/api/login', formData);
-      setMessage(response.data.message);
-      setFormData({
-        email: '',
-        password: '',
-      });
-    } catch (err) {
-      if (err.response && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('Login failed. Please try again.');
-      }
-    }
+    // Placeholder for manual email/password login (no API)
+    // In a real app, you would use Firebase's signInWithEmailAndPassword
+    setError('Email/password login is not implemented. Please use Google Sign-In.');
   };
 
   const handleGoogleSignIn = async () => {
@@ -51,9 +39,9 @@ const Login = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       setMessage(`Successfully signed in as ${user.displayName}`);
-      window.location.href('/')
-      const idToken = await user.getIdToken();
-      await axios.post('http://localhost:5000/api/google-signin', { idToken });
+      setTimeout(() => {
+        navigate('/');
+      }, 1500); // Delay for user to see success message
     } catch (err) {
       setError('Google sign-in failed. Please try again.');
     }
@@ -92,7 +80,7 @@ const Login = () => {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="text-gray-400 text-lg font-mono mb-12 max-w-xl"
           >
-            Log in to access your tutorials, interview prep, and the latest tech news.
+            Log in to explore my skills, projects, and achievements.
           </motion.p>
 
           <motion.div
@@ -112,7 +100,7 @@ const Login = () => {
               </p>
             )}
 
-            <form onSubmit={''} className="flex flex-col gap-6">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               <div className="flex flex-col text-left">
                 <label htmlFor="email" className="text-gray-400 mb-2">
                   Email

@@ -95,7 +95,7 @@ const Home = () => {
         </section>
 
         {/* Tutorials Section */}
-        <section className="py-16 px-6 md:px-12">
+        {/* <section className="py-16 px-6 md:px-12">
           <motion.h2
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -164,10 +164,10 @@ const Home = () => {
               ))
             )}
           </div>
-        </section>
+        </section> */}
 
         {/* News Section */}
-        <section className="py-16 px-6 md:px-12 bg-[#0a0a0a]">
+        {/* <section className="py-16 px-6 md:px-12 bg-[#0a0a0a]">
           <motion.h2
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -236,7 +236,7 @@ const Home = () => {
               ))
             )}
           </div>
-        </section>
+        </section> */}
 
         {/* Call-to-Action Section */}
         <section className="py-16 px-6 md:px-12 text-center">

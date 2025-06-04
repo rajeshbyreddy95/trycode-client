@@ -30,7 +30,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post('http://localhost:5000/api/register', formData);
-      setMessage(response.data.message);
+      
       setFormData({
         username: '',
         email: '',
@@ -53,7 +53,7 @@ const Signup = () => {
       const user = result.user;
       setMessage(`Successfully signed in as ${user.displayName}`);
       const idToken = await user.getIdToken();
-      await axios.post('http://localhost:5000/api/google-signin', { idToken });
+      
     } catch (err) {
       setError('Google sign-in failed. Please try again.');
     }
