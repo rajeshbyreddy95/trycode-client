@@ -95,7 +95,7 @@ const Aboutus = () => {
                   className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
                 />
                 <h3 className="text-xl font-semibold text-cyan-400 mb-2">{member.name}</h3>
-                <p className="text-gray-400">{member.role}</p>
+                {/* <p className="text-gray-400">{member.role}</p> */}
               </motion.div>
             ))}
           </div>
