@@ -186,9 +186,9 @@ const Contact = () => {
             {/* Contact Info */}
             <div>
               <h4 className="text-lg font-semibold text-violet-400 mb-4">Contact Us</h4>
-              <p className="text-gray-400">Email: support@trycode.com</p>
-              <p className="text-gray-400">Phone: +1 (555) 123-4567</p>
-              <p className="text-gray-400">Address: 123 Tech Street, Code City</p>
+              <p className="text-gray-400">Email: rajeshbyreddy9@gmail.com</p>
+              <p className="text-gray-400">Phone: +91 7075979652</p>
+              <p className="text-gray-400">Address: Hyderabad, Telangana, India</p>
             </div>
 
             {/* Social Media */}

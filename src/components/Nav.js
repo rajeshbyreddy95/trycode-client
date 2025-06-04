@@ -18,10 +18,10 @@ const Nav = () => {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Interview Qs', path: '/interviewquestions' },
-    { name: 'Projects', path: '/projects' },
-    { name: 'Jobs', path: '/jobs' },
+    // { name: 'Projects', path: '/projects' },
+    // { name: 'Jobs', path: '/jobs' },
     { name: 'Roadmaps', path: '/roadmaps' },
-    { name: 'Store', path: '/store' },
+    // { name: 'Store', path: '/store' },
     { name: 'Contact', path: '/contact-us' },
     { name: 'About Us', path: '/aboutUs' },
   ];
