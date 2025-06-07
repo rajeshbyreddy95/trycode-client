@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { jobsdata } from './jobsdata';
@@ -7,6 +7,7 @@ import Footer from '../../components/Footer';
 const JobDetails = ({ dark }) => {
   const { job_id } = useParams();
   const navigate = useNavigate();
+  const [showCopied, setShowCopied] = useState(false);
   const job = jobsdata.find(job => job.job_id === parseInt(job_id));
 
   if (!job) {
@@ -20,6 +21,41 @@ const JobDetails = ({ dark }) => {
   const cardVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
+  const toastVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  };
+
+  // Truncate description for sharing
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + '...';
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: `${job.roleName} at ${job.companyName}`,
+      text: truncateText(job.about, 100),
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('Share failed:', err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        setShowCopied(true);
+        setTimeout(() => setShowCopied(false), 2000);
+      } catch (err) {
+        console.error('Clipboard copy failed:', err);
+      }
+    }
   };
 
   return (
@@ -113,12 +149,32 @@ const JobDetails = ({ dark }) => {
             </a>
             <button
               onClick={() => navigate('/jobs')}
-              className={`inline-block border border-gray-600 hover:border-cyan-500 transition px-8 py-3 rounded-full font-semibold text-gray-200 hover:text-cyan-300' cursor-poiter text-center`}
+              className={`inline-block border border-gray-600 hover:border-cyan-500 transition px-8 py-3 rounded-full font-semibold text-gray-200 hover:text-cyan-300 cursor-pointer text-center`}
             >
               View Other Jobs
             </button>
+            <button
+              onClick={handleShare}
+              className={`inline-block bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500 transition px-8 py-3 rounded-full font-semibold text-white shadow-lg text-center flex items-center justify-center gap-2`}
+            >
+              
+              <span><i class="fa-solid fa-arrow-up-right-from-square"></i>  Share Job</span>
+            </button>
           </div>
         </motion.div>
+
+        {/* Copied to Clipboard Message */}
+        {showCopied && (
+          <motion.div
+            variants={toastVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="fixed bottom-6 right-6 bg-[#111] text-gray-200 px-4 py-2 rounded-lg shadow-lg border border-cyan-500/50"
+          >
+            Link copied to clipboard!
+          </motion.div>
+        )}
       </div>
 
       <Footer />
