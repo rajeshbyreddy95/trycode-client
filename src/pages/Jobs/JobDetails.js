@@ -113,7 +113,7 @@ const JobDetails = ({ dark }) => {
             </a>
             <button
               onClick={() => navigate('/jobs')}
-              className={`inline-block border border-gray-600 hover:border-cyan-500 transition px-8 py-3 rounded-full font-semibold ${dark ? 'text-gray-200 hover:text-cyan-300' : 'text-gray-800 hover:text-sky-500'} text-center`}
+              className={`inline-block border border-gray-600 hover:border-cyan-500 transition px-8 py-3 rounded-full font-semibold text-gray-200 hover:text-cyan-300' cursor-poiter text-center`}
             >
               View Other Jobs
             </button>
