@@ -1,6 +1,27 @@
 import React from 'react'
-
+import { ref, onValue, update, get, set, getDatabase } from 'firebase/database'
+import { app } from '../firebase/firebaseConfig';
+import { useState, useEffect } from 'react';
 const Footer = () => {
+  const db = getDatabase(app)
+  const [visitorCount, setVisitorCount] = useState(0);
+
+  useEffect(() => {
+    const db = getDatabase(app);
+    const countRef = ref(db, 'visits');
+
+    // Read + update count in real-time
+    onValue(countRef, (snapshot) => {
+      const count = snapshot.val() || 0;
+      setVisitorCount(count);
+    });
+
+    // Increment count once per mount (optional)
+    get(countRef).then((snapshot) => {
+      const currentCount = snapshot.val() || 0;
+      set(countRef, currentCount + 1);
+    });
+  }, []);
   return (
     <footer className="bg-[#0a0a0a] py-12 px-6 md:px-12">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -76,6 +97,10 @@ const Footer = () => {
           </div>
           <div className="mt-8 text-center text-gray-500 text-sm">
             © 2025 tryCode. All rights reserved.
+            <div className="mt-8 text-center text-gray-500 text-sm">
+        👥 Visitors: {visitorCount+1265} <br />
+        © 2025 tryCode. All rights reserved.
+      </div>
           </div>
         </footer>
   )
