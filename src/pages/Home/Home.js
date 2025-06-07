@@ -46,16 +46,16 @@ const Home = () => {
   const [tutorials, setTutorials] = useState([]);
   const [news, setNews] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get('http://localhost:5000/api/tutorials')
-      .then((res) => setTutorials(res.data.slice(0, 3)))
-      .catch((err) => console.error(err));
-    axios
-      .get('http://localhost:5000/api/news')
-      .then((res) => setNews(res.data.slice(0, 3)))
-      .catch((err) => console.error(err));
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get('http://localhost:5000/api/tutorials')
+  //     .then((res) => setTutorials(res.data.slice(0, 3)))
+  //     .catch((err) => console.error(err));
+  //   axios
+  //     .get('http://localhost:5000/api/news')
+  //     .then((res) => setNews(res.data.slice(0, 3)))
+  //     .catch((err) => console.error(err));
+  // }, []);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 30 },
