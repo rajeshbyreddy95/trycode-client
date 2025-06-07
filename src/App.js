@@ -13,6 +13,7 @@ import Login from './pages/Auth/Login'
 import Profile from './components/Profile'
 import JobList from './pages/Jobs/Job'
 import JobDetails from './pages/Jobs/JobDetails'
+import PrivacyTerms from './pages/PrivacyTerms'
 const App = () => {
   return ( 
     <BrowserRouter>
@@ -42,6 +43,8 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+
+        <Route path='/privacy' element={<PrivacyTerms/>}></Route>
         
       </Routes>
     </BrowserRouter>

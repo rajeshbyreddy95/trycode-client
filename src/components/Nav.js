@@ -24,7 +24,8 @@ const Nav = () => {
     // { name: 'Store', path: '/store' },
     { name: 'Contact', path: '/contact-us' },
     { name: 'About Us', path: '/aboutUs' },
-    { name: 'Jobs', path: '/jobs' }
+    { name: 'Jobs', path: '/jobs' },
+    { name: 'Privacy & Policy', path: '/privacy' }
   ];
 
   // Animation variants for the mobile sidebar
