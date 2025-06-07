@@ -87,7 +87,7 @@ const Home = () => {
           <TypingTagline text="Explore tutorials, interview prep & tech news." />
           <motion.a
             whileHover={{ scale: 1.05 }}
-            href="/tutorials"
+            href="/roadmaps"
             className="mt-6 inline-block bg-gradient-to-r from-cyan-600 to-violet-600 hover:from-cyan-500 hover:to-violet-500 transition px-8 py-3 rounded-full font-semibold text-white shadow-lg"
           >
             Get Started
